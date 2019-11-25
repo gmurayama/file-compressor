@@ -32,7 +32,7 @@
             this.panelFile = new System.Windows.Forms.Panel();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.labelCompressionPercent = new System.Windows.Forms.Label();
             this.comboBoxAlgorithm = new System.Windows.Forms.ComboBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
@@ -75,16 +75,16 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "Compression:";
             // 
-            // label2
+            // labelCompressionPercent
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(110, 151);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(21, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "--%";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelCompressionPercent.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelCompressionPercent.Location = new System.Drawing.Point(84, 151);
+            this.labelCompressionPercent.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelCompressionPercent.Name = "labelCompressionPercent";
+            this.labelCompressionPercent.Size = new System.Drawing.Size(49, 17);
+            this.labelCompressionPercent.TabIndex = 3;
+            this.labelCompressionPercent.Text = "--%";
+            this.labelCompressionPercent.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // comboBoxAlgorithm
             // 
@@ -135,7 +135,7 @@
             this.Controls.Add(this.buttonSend);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.comboBoxAlgorithm);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.labelCompressionPercent);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -158,7 +158,7 @@
         private System.Windows.Forms.Panel panelFile;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelCompressionPercent;
         private System.Windows.Forms.ComboBox comboBoxAlgorithm;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonSend;

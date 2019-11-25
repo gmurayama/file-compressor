@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSender", "src\FileSender\FileSender.csproj", "{B1F2CDDE-4D92-4C7C-9FE5-4C43AB1D617C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compression", "src\Compression\Compression.csproj", "{4E52B560-34FC-44A0-ABD9-993059A25FE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{B1F2CDDE-4D92-4C7C-9FE5-4C43AB1D617C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1F2CDDE-4D92-4C7C-9FE5-4C43AB1D617C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1F2CDDE-4D92-4C7C-9FE5-4C43AB1D617C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
