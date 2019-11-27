@@ -1,4 +1,5 @@
 ﻿using Compression;
+using Compression.Algorithms;
 using System;
 using System.IO;
 using System.Linq;
