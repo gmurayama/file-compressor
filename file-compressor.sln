@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSender", "src\FileSende
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compression", "src\Compression\Compression.csproj", "{4E52B560-34FC-44A0-ABD9-993059A25FE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compression.Tests", "src\Compression.Tests\Compression.Tests.csproj", "{4F3A1228-1EB6-4CC6-A40E-1A1F643488E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E52B560-34FC-44A0-ABD9-993059A25FE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F3A1228-1EB6-4CC6-A40E-1A1F643488E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F3A1228-1EB6-4CC6-A40E-1A1F643488E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F3A1228-1EB6-4CC6-A40E-1A1F643488E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F3A1228-1EB6-4CC6-A40E-1A1F643488E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
