@@ -1,5 +1,6 @@
 ﻿using Compression;
 using Compression.Algorithms;
+using Compression.Algorithms.Huffman;
 using System;
 using System.IO;
 using System.Linq;
@@ -20,12 +21,12 @@ namespace FileSender
         private void panelFile_DragDrop(object sender, DragEventArgs e)
         {
             files = e.Data.GetData(DataFormats.FileDrop, false) as string[];
-            var huffman = new Huffman();
+            var huffman = new HuffmanCoding();
 
             var file = File.ReadAllBytes(files.First());
 
-            huffman.Compress(file);
-            var compressionPercentage = huffman.CompressedData.Length / (decimal)file.Length * 100;
+            var compressed = huffman.Compress(file);
+            var compressionPercentage = compressed.Data.Length / (decimal)file.Length * 100;
             labelCompressionPercent.Text = $"{compressionPercentage.ToString("0.00")} %";
         }
 

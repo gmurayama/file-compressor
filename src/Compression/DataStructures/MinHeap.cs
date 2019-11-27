@@ -78,5 +78,7 @@ namespace Compression.DataStructures
 
             return node;
         }
+
+        public Node<T>[] ExportQueueAsArray() => Heap.ToArray();
     }
 }

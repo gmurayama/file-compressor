@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
+﻿using System.Collections;
 using System.Text;
-using Compression.Algorithms;
+using Compression.Algorithms.Huffman;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Compression.Tests
@@ -16,11 +14,10 @@ namespace Compression.Tests
             string content = "dabdccadadad";
             byte[] file = Encoding.UTF8.GetBytes(content);
 
-            var huffman = new Huffman();
+            var huffman = new HuffmanCoding();
 
-            huffman.Compress(file);
-            var compressedFile = huffman.CompressedData;
-            var bits = new BitArray(compressedFile);
+            var compressed = huffman.Compress(file);
+            var bits = new BitArray(compressed.BitsTrimmed());
 
             Assert.AreEqual("0111000101101110110110", bits.PrintArray());
         }
@@ -31,10 +28,9 @@ namespace Compression.Tests
             string content = "The quick Brown Fox jumps over the Lazy Dog";
             byte[] file = Encoding.UTF8.GetBytes(content);
 
-            var huffman = new Huffman();
+            var huffman = new HuffmanCoding();
 
-            huffman.Compress(file);
-            var compressed = huffman.CompressedData;
+            var compressed = huffman.Compress(file);
             var decompressed = huffman.Decompress(compressed);
 
             string decompressedContent = Encoding.UTF8.GetString(decompressed);
