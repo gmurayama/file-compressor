@@ -7,12 +7,24 @@ namespace Compression.Algorithms.Huffman
 {
     public class HuffmanCoding
     {
+        private int position;
+
+        private long fileLength;
+
+        public HuffmanCoding()
+        {
+            position = 0;
+        }
+
+        public decimal Percentage { get => fileLength > 0 ? (decimal)position / fileLength * 100 : 0; }
+
         public CompressedFile Compress(byte[] file)
         {
             var frequency = file
                 .GroupBy(b => b)
                 .Select(g => new Node<byte> { Value = g.Key, Priority = g.Count() })
-                .OrderBy(b => b.Priority);
+                .OrderBy(b => b.Priority)
+                .ToList();
 
             var queue = CreatePriorityQueue(frequency);
             return Compress(file, queue);
@@ -20,16 +32,20 @@ namespace Compression.Algorithms.Huffman
 
         private CompressedFile Compress(byte[] file, MinHeap<byte> queue)
         {
+            fileLength = file.LongLength;
+
             BitArray bits = new BitArray(0);
             var queueAsArray = queue.ExportQueueAsArray();
             var huffmanTree = BuildHuffmanTree(queue);
             var dictionary = BuildCodingDictionary(huffmanTree);
 
-            for (int i = 0; i < file.Length; i++)
+            for (position = 0; position < file.Length; position++)
             {
-                var code = dictionary[file[i]];
+                var code = dictionary[file[position]];
                 bits = bits.Add(code);
             }
+
+            position = 0;
 
             var bytes = new byte[(bits.Length - 1) / 8 + 1];
             int extraBits = (8 - bits.Length % 8) % 8;
@@ -43,18 +59,20 @@ namespace Compression.Algorithms.Huffman
             var bits = new BitArray(file.Data);
             var decoded = new List<byte>();
 
+            fileLength = bits.Length;
+
             var queue = CreatePriorityQueue(file.Queue);
             var huffmanTree = BuildHuffmanTree(queue);
             var dictionary = BuildEncodingDictionary(huffmanTree);
 
-            for (int i = 0, j; i < bits.Length - file.ExtraBits; i = j + 1)
+            for (int i = 0; i < bits.Length - file.ExtraBits; i = position + 1)
             {
                 var code = new BitArray(0);
                 byte byteCode = 0;
 
-                for (j = i; j < bits.Length - file.ExtraBits; j++)
+                for (position = i; position < bits.Length - file.ExtraBits; position++)
                 {
-                    code = code.Add(bits[j]);
+                    code = code.Add(bits[position]);
 
                     var codeExists = dictionary.TryGetValue(code.PrintArray(), out byteCode);
 
