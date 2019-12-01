@@ -29,14 +29,19 @@ namespace FileSender
         private async void panelFile_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop, false) as string[];
-            var huffman = new HuffmanCoding();
-            RunLengthEncodingCompressor rleCompressor = new RunLengthEncodingCompressor();
+            ICompressor compressor;
+
+            if (comboBoxAlgorithm.Text.Equals("Huffman"))
+            {
+                compressor = new HuffmanCoding();
+            } else
+            {
+                compressor = new RunLengthEncodingCompressor();
+            }
             
             var file = File.ReadAllBytes(files.First());
 
-            //this.file = new CompressedFile(file, 0, new Compression.DataStructures.Node<byte>[0]);
-            
-            compressedFile = rleCompressor.Compress(file);
+            compressedFile = compressor.Compress(file);
             
             
             FileStream fileStream = new FileStream("arquivo_comprimido.dat", FileMode.Create);
@@ -53,7 +58,7 @@ namespace FileSender
 
             var task = Task.Run(() =>
             {
-                return huffman.Compress(file);
+                return compressor.Compress(file);
             });
 
             await Task.Run(() =>
@@ -66,7 +71,7 @@ namespace FileSender
                 {
                     if (i == 10000)
                     {
-                        labelCompressionPercent.Invoke(d, $"{huffman.Percentage} %");
+                        //labelCompressionPercent.Invoke(d, $"{huffman.Percentage} %");
                     }
 
                     i = (i + 1) % 10001;
@@ -105,6 +110,11 @@ namespace FileSender
         private void WritePercentage(string text)
         {
             labelCompressionPercent.Text = text;
+        }
+
+        private void comboBoxAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }
