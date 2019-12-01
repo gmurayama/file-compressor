@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Compression.Algorithms.RunLengthEncoding
 {
-    public class RunLengthEncodingCompressor
+    public class RunLengthEncodingCompressor : ICompressor
     {
         private const byte MAX_PACKAGE_SIZE = 255; 
         public CompressedFile Compress(byte [] file)
