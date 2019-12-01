@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Compression.Algorithms
 {
-    interface ICompressor
+    public interface ICompressor
     {
         CompressedFile Compress(byte[] file);
         byte[] Decompress(CompressedFile compressedFile);
