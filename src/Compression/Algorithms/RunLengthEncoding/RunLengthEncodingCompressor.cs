@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Compression.Algorithms.RunLengthEncoding
 {
-    class RunLengthEncodingCompressor
+    public class RunLengthEncodingCompressor
     {
         private const byte MAX_PACKAGE_SIZE = 255; 
         public byte[] Compress(byte [] file)
