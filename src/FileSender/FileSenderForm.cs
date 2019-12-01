@@ -38,8 +38,9 @@ namespace FileSender
             }
             
             var file = File.ReadAllBytes(files.First());
-
+            
             compressedFile = compressor.Compress(file);
+            compressedFile.OriginalFileName = Path.GetFileName(files.First());
             
             FileStream fileStream = new FileStream("arquivo_comprimido.dat", FileMode.Create);
             Console.WriteLine("Escrevendo arquivo");
