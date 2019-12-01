@@ -48,11 +48,14 @@ namespace Compression.Algorithms.RunLengthEncoding
 
         public byte[] Decompress(byte[] compressedFile)
         {
+            const int nextCountOffset = 2;
+            const int runValueOffset = 1;
+
             List<byte> file = new List<byte>();
-            for (int position = 0; position < compressedFile.Length; position += 2)
+            for (int position = 0; position < compressedFile.Length; position += nextCountOffset)
             {
                 byte runCount = compressedFile[position];
-                byte runValue = compressedFile[position + 1];
+                byte runValue = compressedFile[position + runValueOffset];
 
                 for (int count = 0; count < runCount; count++)
                     file.Add(runValue);
