@@ -96,7 +96,7 @@ namespace FileSender
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
-            var serialized = JsonConvert.SerializeObject(file);
+            var serialized = JsonConvert.SerializeObject(compressedFile);
 
             using (var content = new StringContent(serialized))
             {
