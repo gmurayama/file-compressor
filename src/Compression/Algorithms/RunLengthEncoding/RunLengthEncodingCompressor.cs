@@ -11,11 +11,9 @@ namespace Compression.Algorithms.RunLengthEncoding
     class RunLengthEncodingCompressor
     {
         private const byte MAX_PACKAGE_SIZE = 255; 
-        public byte[] CompressFile()
+        public byte[] CompressFile(byte [] file)
         {
             List<byte> newFile = new List<byte>();
-
-            byte[] file = new byte[] { 1, 2, 2, 2, 1 };
 
             byte runValue = file[0];
             byte runCount = 1;
