@@ -16,8 +16,6 @@ namespace FileSender
     {
         private CompressedFile compressedFile;
 
-        private CompressedFile file;
-
         private delegate void WritePercentageDelegate(string text);
 
         public FileSenderForm()
@@ -42,7 +40,6 @@ namespace FileSender
             var file = File.ReadAllBytes(files.First());
 
             compressedFile = compressor.Compress(file);
-            
             
             FileStream fileStream = new FileStream("arquivo_comprimido.dat", FileMode.Create);
             Console.WriteLine("Escrevendo arquivo");
