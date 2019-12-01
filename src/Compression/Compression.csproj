@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Algorithms\Huffman\CompressedFile.cs" />
     <Compile Include="Algorithms\Huffman\HuffmanCoding.cs" />
+    <Compile Include="Algorithms\ICompressor.cs" />
     <Compile Include="Algorithms\RunLengthEncoding\RunLengthEncodingCompressor.cs" />
     <Compile Include="BitArrayExtensions.cs" />
     <Compile Include="DataStructures\MinHeap.cs" />
