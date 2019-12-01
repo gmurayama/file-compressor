@@ -47,5 +47,20 @@ namespace Compression.Algorithms.RunLengthEncoding
 
             return newFile.ToArray();
         }
+
+        public byte[] Decompress(byte[] compressedFile)
+        {
+            List<byte> file = new List<byte>();
+            for (int position = 0; position < compressedFile.Length; position += 2)
+            {
+                byte runCount = compressedFile[position];
+                byte runValue = compressedFile[position + 1];
+
+                for (int count = 0; count < runCount; count++)
+                    file.Add(runValue);
+            }
+
+            return file.ToArray();
+        }
     }
 }
