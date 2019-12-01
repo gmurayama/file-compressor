@@ -15,8 +15,6 @@ namespace FileSender
     {
         private CompressedFile compressedFile;
 
-        private CompressedFile file;
-
         private delegate void WritePercentageDelegate(string text);
 
         public FileSenderForm()
@@ -31,11 +29,7 @@ namespace FileSender
             var huffman = new HuffmanCoding();
 
             var file = File.ReadAllBytes(files.First());
-
-            this.file = new CompressedFile(file, 0, new Compression.DataStructures.Node<byte>[0]);
-
-            return;
-
+            
             var task = Task.Run(() =>
             {
                 return huffman.Compress(file);
@@ -76,7 +70,7 @@ namespace FileSender
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
-            var serialized = JsonConvert.SerializeObject(file);
+            var serialized = JsonConvert.SerializeObject(compressedFile);
 
             using (var content = new StringContent(serialized))
             {

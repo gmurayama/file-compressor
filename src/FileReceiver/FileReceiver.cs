@@ -65,10 +65,10 @@ namespace FileReceiver
 
         private void PaintImage(CompressedFile file)
         {
-            //var huffman = new HuffmanCoding();
-            //var data = huffman.Decompress(file);
+            var huffman = new HuffmanCoding();
+            var data = huffman.Decompress(file);
 
-            using (var ms = new MemoryStream(file.Data))
+            using (var ms = new MemoryStream(data))
             {
                 pictureBoxImage.Image = Image.FromStream(ms);
             }

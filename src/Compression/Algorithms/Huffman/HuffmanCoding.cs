@@ -20,6 +20,8 @@ namespace Compression.Algorithms.Huffman
 
         public CompressedFile Compress(byte[] file)
         {
+            position = 0;
+
             var frequency = file
                 .GroupBy(b => b)
                 .Select(g => new Node<byte> { Value = g.Key, Priority = g.Count() })
@@ -34,19 +36,26 @@ namespace Compression.Algorithms.Huffman
         {
             fileLength = file.LongLength;
 
-            BitArray bits = new BitArray(0);
             var queueAsArray = queue.ExportQueueAsArray();
             var huffmanTree = BuildHuffmanTree(queue);
             var dictionary = BuildCodingDictionary(huffmanTree);
 
+            var biggestCode = dictionary[queueAsArray[0].Value];
+            var bits = new BitArray(biggestCode.Count * file.Length);
+            int totalLength = 0;
+
             for (position = 0; position < file.Length; position++)
             {
                 var code = dictionary[file[position]];
-                bits = bits.Add(code);
+                
+                for (int i = 0; i < code.Count; i++, totalLength++)
+                {
+                    bits[totalLength] = code[i];
+                }
             }
 
-            position = 0;
-
+            bits = bits.CloneRange(0, totalLength);
+            
             var bytes = new byte[(bits.Length - 1) / 8 + 1];
             int extraBits = (8 - bits.Length % 8) % 8;
             bits.CopyTo(bytes, 0);
