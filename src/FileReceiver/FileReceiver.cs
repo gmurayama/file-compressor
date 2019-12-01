@@ -1,4 +1,6 @@
-﻿using Compression.Algorithms.Huffman;
+﻿using Compression.Algorithms;
+using Compression.Algorithms.Huffman;
+using Compression.Algorithms.RunLengthEncoding;
 using Newtonsoft.Json;
 using System;
 using System.Drawing;
@@ -43,9 +45,10 @@ namespace FileReceiver
                         {
                             body = reader.ReadToEnd();
                         }
-
+                        Console.WriteLine("ANTES DO SERIALIZE");
                         var compressed = JsonConvert.DeserializeObject<CompressedFile>(body);
 
+                        Console.WriteLine("DEPOIS DO SERIALIZE");
                         var d = new PaintImageDelegate(PaintImage);
                         pictureBoxImage.Invoke(d, compressed);
                     }
@@ -63,12 +66,21 @@ namespace FileReceiver
             serverThread.Join(1000 * 5);
         }
 
-        private void PaintImage(CompressedFile file)
+        private void PaintImage(CompressedFile compressedFile)
         {
-            //var huffman = new HuffmanCoding();
-            //var data = huffman.Decompress(file);
+            ICompressor compressor;
+        
+            if(compressedFile.isHuffman())
+            {
+                compressor = new HuffmanCoding();
+            } else
+            {
+                compressor = new RunLengthEncodingCompressor();
+            }
 
-            using (var ms = new MemoryStream(file.Data))
+            byte[] fileData = compressor.Decompress(compressedFile);
+
+            using (var ms = new MemoryStream(fileData))
             {
                 pictureBoxImage.Image = Image.FromStream(ms);
             }
