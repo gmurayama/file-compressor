@@ -18,6 +18,14 @@ namespace Compression.Algorithms.Huffman
 
         public Node<byte>[] Queue { get; private set; }
 
+        public bool isHuffman()
+        {
+            if (Queue != null)
+                return true;
+
+            return false;
+        }
+
         public BitArray BitsTrimmed()
         {
             var byteAsBits = new BitArray(Data);
