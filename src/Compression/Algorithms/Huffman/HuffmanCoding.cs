@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Compression.Algorithms.Huffman
 {
-    public class HuffmanCoding
+    public class HuffmanCoding : ICompressor
     {
         private int position;
 
