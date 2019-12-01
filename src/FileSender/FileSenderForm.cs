@@ -1,6 +1,7 @@
 ﻿using Compression;
 using Compression.Algorithms;
 using Compression.Algorithms.Huffman;
+using Compression.Algorithms.RunLengthEncoding;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -29,10 +30,24 @@ namespace FileSender
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop, false) as string[];
             var huffman = new HuffmanCoding();
-
+            RunLengthEncodingCompressor rleCompressor = new RunLengthEncodingCompressor();
+            
             var file = File.ReadAllBytes(files.First());
 
-            this.file = new CompressedFile(file, 0, new Compression.DataStructures.Node<byte>[0]);
+            //this.file = new CompressedFile(file, 0, new Compression.DataStructures.Node<byte>[0]);
+            
+            compressedFile = rleCompressor.Compress(file);
+            
+            
+            FileStream fileStream = new FileStream("arquivo_comprimido.dat", FileMode.Create);
+            Console.WriteLine("Escrevendo arquivo");
+            
+            for (int position = 0; position < compressedFile.Data.Length; position++)
+                fileStream.WriteByte(compressedFile.Data[position]);
+            fileStream.Close();
+
+            var compressionPercentage = (compressedFile.Data.Length * 100) / (decimal) file.Length;
+            labelCompressionPercent.Text = $"{compressionPercentage.ToString("0.00")} %";
 
             return;
 
@@ -57,7 +72,7 @@ namespace FileSender
                     i = (i + 1) % 10001;
                 }
 
-                compressedFile = task.Result;
+                this.compressedFile = task.Result;
             });
 
             //var compressionPercentage = compressedFile.Data.Length / (decimal)file.Length * 100;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Compression.Algorithms.Huffman;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +12,7 @@ namespace Compression.Algorithms.RunLengthEncoding
     public class RunLengthEncodingCompressor
     {
         private const byte MAX_PACKAGE_SIZE = 255; 
-        public byte[] Compress(byte [] file)
+        public CompressedFile Compress(byte [] file)
         {
             List<byte> newFile = new List<byte>();
 
@@ -42,20 +43,24 @@ namespace Compression.Algorithms.RunLengthEncoding
 
             newFile.Add(runCount);
             newFile.Add(runValue);
-
-            return newFile.ToArray();
+            
+            CompressedFile compressedFile = new CompressedFile(newFile.ToArray(), 0, null);
+            
+            return compressedFile;
         }
 
-        public byte[] Decompress(byte[] compressedFile)
+        public byte[] Decompress(CompressedFile compressedFile)
         {
             const int nextCountOffset = 2;
             const int runValueOffset = 1;
 
+            byte[] compressedFileData = compressedFile.Data;
+
             List<byte> file = new List<byte>();
-            for (int position = 0; position < compressedFile.Length; position += nextCountOffset)
+            for (int position = 0; position < compressedFileData.Length; position += nextCountOffset)
             {
-                byte runCount = compressedFile[position];
-                byte runValue = compressedFile[position + runValueOffset];
+                byte runCount = compressedFileData[position];
+                byte runValue = compressedFileData[position + runValueOffset];
 
                 for (int count = 0; count < runCount; count++)
                     file.Add(runValue);
