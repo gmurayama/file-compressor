@@ -1,10 +1,13 @@
 ﻿using Compression.DataStructures;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Compression.Algorithms.Huffman
 {
     public class CompressedFile
     {
+        public static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
         public CompressedFile(byte[] data, int extraBits, Node<byte>[] queue)
         {
             Data = data;
@@ -17,6 +20,17 @@ namespace Compression.Algorithms.Huffman
         public byte[] Data { get; private set; }
 
         public Node<byte>[] Queue { get; private set; }
+
+        public string OriginalFileName { get; set; }
+
+        public bool isImage()
+        {
+            String fileExtension = System.IO.Path.GetExtension(OriginalFileName);
+            if (ImageExtensions.Contains(fileExtension.ToUpperInvariant()))
+                return true;
+
+            return false;
+        }
 
         public bool isHuffman()
         {
