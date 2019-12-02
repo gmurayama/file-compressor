@@ -36,6 +36,12 @@
             this.comboBoxAlgorithm = new System.Windows.Forms.ComboBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
+            this.labelStatus = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.labelTempo = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.labelTamanho = new System.Windows.Forms.Label();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.panelFile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
@@ -44,12 +50,13 @@
             // 
             this.panelFile.AllowDrop = true;
             this.panelFile.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.panelFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.panelFile.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelFile.Controls.Add(this.pictureBox);
             this.panelFile.Location = new System.Drawing.Point(10, 32);
             this.panelFile.Margin = new System.Windows.Forms.Padding(2);
             this.panelFile.Name = "panelFile";
-            this.panelFile.Size = new System.Drawing.Size(126, 115);
+            this.panelFile.Size = new System.Drawing.Size(144, 115);
             this.panelFile.TabIndex = 0;
             this.panelFile.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelFile_DragDrop);
             this.panelFile.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelFile_DragEnter);
@@ -57,7 +64,7 @@
             // pictureBox
             // 
             this.pictureBox.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image")));
-            this.pictureBox.Location = new System.Drawing.Point(20, 18);
+            this.pictureBox.Location = new System.Drawing.Point(33, 20);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(80, 71);
@@ -77,11 +84,10 @@
             // 
             // labelCompressionPercent
             // 
-            this.labelCompressionPercent.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.labelCompressionPercent.Location = new System.Drawing.Point(84, 151);
+            this.labelCompressionPercent.Location = new System.Drawing.Point(84, 149);
             this.labelCompressionPercent.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCompressionPercent.Name = "labelCompressionPercent";
-            this.labelCompressionPercent.Size = new System.Drawing.Size(49, 17);
+            this.labelCompressionPercent.Size = new System.Drawing.Size(70, 17);
             this.labelCompressionPercent.TabIndex = 3;
             this.labelCompressionPercent.Text = "--%";
             this.labelCompressionPercent.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -99,15 +105,15 @@
             this.comboBoxAlgorithm.Location = new System.Drawing.Point(10, 7);
             this.comboBoxAlgorithm.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAlgorithm.Name = "comboBoxAlgorithm";
-            this.comboBoxAlgorithm.Size = new System.Drawing.Size(126, 21);
+            this.comboBoxAlgorithm.Size = new System.Drawing.Size(144, 21);
             this.comboBoxAlgorithm.TabIndex = 0;
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(10, 170);
+            this.buttonSave.Location = new System.Drawing.Point(10, 207);
             this.buttonSave.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(60, 23);
+            this.buttonSave.Size = new System.Drawing.Size(70, 23);
             this.buttonSave.TabIndex = 4;
             this.buttonSave.Text = "Save";
             this.buttonSave.UseVisualStyleBackColor = true;
@@ -115,14 +121,63 @@
             // 
             // buttonSend
             // 
-            this.buttonSend.Location = new System.Drawing.Point(74, 170);
+            this.buttonSend.Location = new System.Drawing.Point(84, 207);
             this.buttonSend.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSend.Name = "buttonSend";
-            this.buttonSend.Size = new System.Drawing.Size(60, 23);
+            this.buttonSend.Size = new System.Drawing.Size(70, 23);
             this.buttonSend.TabIndex = 5;
             this.buttonSend.Text = "Send";
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
+            // 
+            // labelStatus
+            // 
+            this.labelStatus.AutoEllipsis = true;
+            this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelStatus.Location = new System.Drawing.Point(8, 234);
+            this.labelStatus.Name = "labelStatus";
+            this.labelStatus.Size = new System.Drawing.Size(144, 12);
+            this.labelStatus.TabIndex = 6;
+            this.labelStatus.Text = "Status: -";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 169);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Tempo:";
+            // 
+            // labelTempo
+            // 
+            this.labelTempo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelTempo.AutoSize = true;
+            this.labelTempo.Location = new System.Drawing.Point(80, 169);
+            this.labelTempo.Name = "labelTempo";
+            this.labelTempo.Size = new System.Drawing.Size(76, 13);
+            this.labelTempo.TabIndex = 8;
+            this.labelTempo.Text = "00:00:00.0000";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 187);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(55, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Tamanho:";
+            // 
+            // labelTamanho
+            // 
+            this.labelTamanho.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelTamanho.AutoEllipsis = true;
+            this.labelTamanho.Location = new System.Drawing.Point(68, 187);
+            this.labelTamanho.Name = "labelTamanho";
+            this.labelTamanho.Size = new System.Drawing.Size(88, 18);
+            this.labelTamanho.TabIndex = 10;
+            this.labelTamanho.Text = "0 kb";
+            this.labelTamanho.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // FileSenderForm
             // 
@@ -130,8 +185,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(144, 202);
+            this.ClientSize = new System.Drawing.Size(161, 255);
+            this.Controls.Add(this.labelTamanho);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.labelTempo);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.panelFile);
+            this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.buttonSend);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.comboBoxAlgorithm);
@@ -162,5 +222,11 @@
         private System.Windows.Forms.ComboBox comboBoxAlgorithm;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonSend;
+        private System.Windows.Forms.Label labelStatus;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelTempo;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelTamanho;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
     }
 }

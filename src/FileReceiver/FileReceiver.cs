@@ -5,7 +5,10 @@ using Newtonsoft.Json;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FileReceiver
@@ -15,12 +18,18 @@ namespace FileReceiver
         private Thread serverThread;
         private Server server;
 
+        private CompressedFile file;
 
-        private delegate void PaintImageDelegate(CompressedFile file);
+        public static readonly string[] imageExtensions = new string[] { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
+
+        private delegate void PaintImageDelegate();
+        private delegate void WriteStatusDelegate(string text);
+        private delegate void SetButtonSalvarEnabledDelegate(bool enabled);
 
         public FileReceiver()
         {
             InitializeComponent();
+            buttonSalvar.Enabled = false;
         }
 
         private void FileReceiver_Load(object sender, EventArgs e)
@@ -36,25 +45,41 @@ namespace FileReceiver
                     var context = await server.Listening();
                     var request = context.Request;
 
-                    if (request.Url.AbsolutePath == "/api/huffman")
+                    var setEnabled = new SetButtonSalvarEnabledDelegate(SetButtonSalvarEnabled);
+                    buttonSalvar.Invoke(setEnabled, false);
+
+                    if (request.Url.AbsolutePath == "/" && request.HttpMethod == "POST")
                     {
+                        var writeStatus = new WriteStatusDelegate(WriteStatus);
+
                         string body;
+
+                        labelStatus.Invoke(writeStatus, "Status: Lendo corpo da requisição");
 
                         using (var reader = new StreamReader(request.InputStream,
                                                              request.ContentEncoding))
                         {
                             body = reader.ReadToEnd();
                         }
-                        
-                        var compressed = JsonConvert.DeserializeObject<CompressedFile>(body);
-                        
-                        saveFile(compressed);   
-                        if (compressed.isImage())
+
+                        labelStatus.Invoke(writeStatus, "Status: Lido corpo da requisição");
+
+                        file = JsonConvert.DeserializeObject<CompressedFile>(body);
+
+                        if (imageExtensions.Contains(Path.GetExtension(file.Name.ToUpperInvariant())))
                         {
                             var d = new PaintImageDelegate(PaintImage);
-                            pictureBoxImage.Invoke(d, compressed);
+                            pictureBoxImage.Invoke(d);
                         }
+
+                        labelStatus.Invoke(writeStatus, "Status: Ações completadas com sucesso");
+                        buttonSalvar.Invoke(setEnabled, true);
                     }
+
+                    var response = context.Response;
+                    response.ContentLength64 = 0;
+                    response.StatusCode = 200;
+                    response.Close();
                 }
 
                 server.Stop();
@@ -69,11 +94,11 @@ namespace FileReceiver
             serverThread.Join(1000 * 5);
         }
 
-        private void saveFile(CompressedFile compressedFile)
+        public byte[] DecompressFile(CompressedFile compressedFile)
         {
             ICompressor compressor;
 
-            if (compressedFile.isHuffman())
+            if (compressedFile.Queue != null)
             {
                 compressor = new HuffmanCoding();
             }
@@ -82,32 +107,52 @@ namespace FileReceiver
                 compressor = new RunLengthEncodingCompressor();
             }
 
-            FileStream fileStream = new FileStream(compressedFile.OriginalFileName, FileMode.Create);
-            byte[] fileData = compressor.Decompress(compressedFile);
-
-            for (int position = 0; position < fileData.Length; position++)
-                fileStream.WriteByte(fileData[position]);
-            fileStream.Close();
+            return compressor.Decompress(compressedFile);
         }
 
-        private void PaintImage(CompressedFile compressedFile)
+        private void PaintImage()
         {
-            ICompressor compressor;
-        
-            if(compressedFile.isHuffman())
-            {
-                compressor = new HuffmanCoding();
-            } else
-            {
-                compressor = new RunLengthEncodingCompressor();
-            }
+            var writeStatus = new WriteStatusDelegate(WriteStatus);
 
-            byte[] fileData = compressor.Decompress(compressedFile);
+            labelStatus.Invoke(writeStatus, "Status: Descomprimindo imagens...");
+
+            var fileData = DecompressFile(file);
+
+            labelStatus.Invoke(writeStatus, "Status: Imagem descomprimida com sucesso");
 
             using (var ms = new MemoryStream(fileData))
             {
                 pictureBoxImage.Image = Image.FromStream(ms);
             }
+        }
+
+        private void WriteStatus(string text)
+        {
+            labelStatus.Text = text;
+        }
+
+        private void SetButtonSalvarEnabled(bool enabled)
+        {
+            buttonSalvar.Enabled = enabled;
+        }
+
+        private async void buttonSalvar_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                var writeStatus = new WriteStatusDelegate(WriteStatus);
+
+                labelStatus.Invoke(writeStatus, "Status: Descomprimindo arquivo...");
+
+                var fileData = await Task.Run(() => DecompressFile(file));
+
+                labelStatus.Invoke(writeStatus, "Status: Arquivo descomprimido com sucesso");
+
+                var path = @folderBrowserDialog.SelectedPath;
+                File.WriteAllBytes(@Path.Combine(path, file.Name), fileData);
+
+                labelStatus.Invoke(writeStatus, "Status: Arquivo salvo com sucesso");
+            } 
         }
     }
 }
