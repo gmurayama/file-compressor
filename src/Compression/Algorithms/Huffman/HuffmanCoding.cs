@@ -5,14 +5,28 @@ using System.Linq;
 
 namespace Compression.Algorithms.Huffman
 {
-    public class HuffmanCoding
+    public class HuffmanCoding : ICompressor
     {
+        private int position;
+
+        private long fileLength;
+
+        public HuffmanCoding()
+        {
+            position = 0;
+        }
+
+        public decimal Percentage { get => fileLength > 0 ? (decimal)position / fileLength * 100 : 0; }
+
         public CompressedFile Compress(byte[] file)
         {
+            position = 0;
+
             var frequency = file
                 .GroupBy(b => b)
                 .Select(g => new Node<byte> { Value = g.Key, Priority = g.Count() })
-                .OrderBy(b => b.Priority);
+                .OrderBy(b => b.Priority)
+                .ToList();
 
             var queue = CreatePriorityQueue(frequency);
             return Compress(file, queue);
@@ -20,17 +34,28 @@ namespace Compression.Algorithms.Huffman
 
         private CompressedFile Compress(byte[] file, MinHeap<byte> queue)
         {
-            BitArray bits = new BitArray(0);
+            fileLength = file.LongLength;
+
             var queueAsArray = queue.ExportQueueAsArray();
             var huffmanTree = BuildHuffmanTree(queue);
             var dictionary = BuildCodingDictionary(huffmanTree);
 
-            for (int i = 0; i < file.Length; i++)
+            var biggestCode = dictionary[queueAsArray[0].Value];
+            var bits = new BitArray(biggestCode.Count * file.Length);
+            int totalLength = 0;
+
+            for (position = 0; position < file.Length; position++)
             {
-                var code = dictionary[file[i]];
-                bits = bits.Add(code);
+                var code = dictionary[file[position]];
+                
+                for (int i = 0; i < code.Count; i++, totalLength++)
+                {
+                    bits[totalLength] = code[i];
+                }
             }
 
+            bits = bits.CloneRange(0, totalLength);
+            
             var bytes = new byte[(bits.Length - 1) / 8 + 1];
             int extraBits = (8 - bits.Length % 8) % 8;
             bits.CopyTo(bytes, 0);
@@ -43,18 +68,20 @@ namespace Compression.Algorithms.Huffman
             var bits = new BitArray(file.Data);
             var decoded = new List<byte>();
 
+            fileLength = bits.Length;
+
             var queue = CreatePriorityQueue(file.Queue);
             var huffmanTree = BuildHuffmanTree(queue);
             var dictionary = BuildEncodingDictionary(huffmanTree);
 
-            for (int i = 0, j; i < bits.Length - file.ExtraBits; i = j + 1)
+            for (int i = 0; i < bits.Length - file.ExtraBits; i = position + 1)
             {
                 var code = new BitArray(0);
                 byte byteCode = 0;
 
-                for (j = i; j < bits.Length - file.ExtraBits; j++)
+                for (position = i; position < bits.Length - file.ExtraBits; position++)
                 {
-                    code = code.Add(bits[j]);
+                    code = code.Add(bits[position]);
 
                     var codeExists = dictionary.TryGetValue(code.PrintArray(), out byteCode);
 

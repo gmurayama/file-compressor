@@ -18,7 +18,19 @@ namespace Compression
             array.CopyTo(bools, 0);
             value.CopyTo(bools, array.Length);
             return new BitArray(bools);
-        }  
+        }
+        
+        public static BitArray CloneRange(this BitArray array, int initialIndex, int length)
+        {
+            bool[] bools = new bool[length - initialIndex];
+
+            for (int i = initialIndex; i < length; i++)
+            {
+                bools[i] = array[i];
+            }
+
+            return new BitArray(bools);
+        }
 
         public static bool AreEqual(this BitArray array, BitArray value)
         {
