@@ -4,6 +4,8 @@ using Compression.Algorithms.Huffman;
 using Compression.Algorithms.RunLengthEncoding;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -15,8 +17,8 @@ namespace FileSender
     public partial class FileSenderForm : Form
     {
         private CompressedFile compressedFile;
-
-        private delegate void WritePercentageDelegate(string text);
+        
+        private delegate void WriteStatusDelegate(string text);
 
         public FileSenderForm()
         {
@@ -27,6 +29,7 @@ namespace FileSender
         private async void panelFile_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop, false) as string[];
+
             ICompressor compressor;
 
             if (comboBoxAlgorithm.Text.Equals("Huffman"))
@@ -37,49 +40,57 @@ namespace FileSender
                 compressor = new RunLengthEncodingCompressor();
             }
             
-            var file = File.ReadAllBytes(files.First());
-            
-            compressedFile = compressor.Compress(file);
-            compressedFile.OriginalFileName = Path.GetFileName(files.First());
-            
-            FileStream fileStream = new FileStream("arquivo_comprimido.dat", FileMode.Create);
-            Console.WriteLine("Escrevendo arquivo");
-            
-            for (int position = 0; position < compressedFile.Data.Length; position++)
-                fileStream.WriteByte(compressedFile.Data[position]);
-            fileStream.Close();
+            var file = File.ReadAllBytes(@files.First());
 
-            var compressionPercentage = (compressedFile.Data.Length * 100) / (decimal) file.Length;
-            labelCompressionPercent.Text = $"{compressionPercentage.ToString("0.00")} %";
+            try
+            {
+                pictureBox.Hide();
+                panelFile.BackgroundImage = Image.FromFile(@files.First());
+            }
+            catch
+            {
+                pictureBox.Show();
+                panelFile.BackgroundImage = null;
+            }
 
-            return;
+            var stopWatch = new Stopwatch();
+
+            stopWatch.Start();
 
             var task = Task.Run(() =>
             {
                 return compressor.Compress(file);
             });
 
-            await Task.Run(() =>
+            compressedFile = await Task.Run(() =>
             {
-                var d = new WritePercentageDelegate(WritePercentage);
+                var writeStatus = new WriteStatusDelegate(WriteStatus);
 
                 int i = 0;
 
                 while (!task.IsCompleted)
                 {
-                    if (i == 10000)
+                    if (i == 500)
                     {
-                        //labelCompressionPercent.Invoke(d, $"{huffman.Percentage} %");
+                        labelStatus.Invoke(writeStatus, $"Status: {compressor.Percentage.ToString("0.00")} % processado");
                     }
 
-                    i = (i + 1) % 10001;
+                    i = (i + 1) % 501;
                 }
 
-                this.compressedFile = task.Result;
+                labelStatus.Invoke(writeStatus, $"Status: 100 % processado");
+
+                var f = task.Result;
+                f.Name = Path.GetFileName(files.First());
+                return f;
             });
 
-            //var compressionPercentage = compressedFile.Data.Length / (decimal)file.Length * 100;
-            //labelCompressionPercent.Text = $"{compressionPercentage.ToString("0.00")} %";
+            stopWatch.Stop();
+
+            var compressionPercentage = compressedFile.Data.Length * 100M / file.Length;
+            labelTempo.Text = stopWatch.Elapsed.ToString(@"hh\:mm\:ss\.ffff");
+            labelTamanho.Text = (compressedFile.Data.LongLength / 1024M).ToString("0.000") + " kb";
+            labelCompressionPercent.Text = $"{compressionPercentage.ToString("0.00")} %";
         }
 
         private void panelFile_DragEnter(object sender, DragEventArgs e)
@@ -87,12 +98,34 @@ namespace FileSender
             e.Effect = DragDropEffects.Copy;
         }
 
-        private void buttonSave_Click(object sender, EventArgs e)
+        private async void buttonSave_Click(object sender, EventArgs e)
         {
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                var path = @Path.Combine(folderBrowserDialog.SelectedPath, $"{compressedFile.Name}.dat");
+                var fileStream = new FileStream(path, FileMode.Create);
+                var d = new WriteStatusDelegate(WriteStatus);
 
+                await Task.Run(() =>
+                {
+                    for (int position = 0; position < compressedFile.Data.Length; position++)
+                    {
+                        fileStream.WriteByte(compressedFile.Data[position]);
+
+                        if (position % 500 == 0)
+                            labelStatus.Invoke(d, $"Salvando: {(position * 100M / compressedFile.Data.Length).ToString("0.00")} %");
+                    }
+
+                    labelStatus.Invoke(d, $"Salvando: 100 %");
+
+                    return Task.CompletedTask;
+                });
+
+                fileStream.Close();
+            }
         }
 
-        private void buttonSend_Click(object sender, EventArgs e)
+        private async void buttonSend_Click(object sender, EventArgs e)
         {
             var serialized = JsonConvert.SerializeObject(compressedFile);
 
@@ -100,19 +133,28 @@ namespace FileSender
             {
                 using (var client = new HttpClient())
                 {
-                    client.PostAsync("http://localhost:8000/api/huffman", content).Wait();
+                    labelStatus.Text = "Status: Enviando arquivo...";
+
+                    try
+                    {
+                        var response = await client.PostAsync("http://localhost:8000/", content);
+
+                        if (response.IsSuccessStatusCode)
+                            labelStatus.Text = "Status: Arquivo enviado";
+                        else
+                            labelStatus.Text = $"Status: Erro ao enviar arquivo! (StatusCode {response.StatusCode})";
+                    }
+                    catch (Exception ex)
+                    {
+                        labelStatus.Text = $"Status: Erro ao enviar arquivo! (ErrorCode {ex.HResult})";
+                    }
                 }
             }
         }
 
-        private void WritePercentage(string text)
+        private void WriteStatus(string text)
         {
-            labelCompressionPercent.Text = text;
-        }
-
-        private void comboBoxAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
+            labelStatus.Text = text;
         }
     }
 }

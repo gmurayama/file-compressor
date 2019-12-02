@@ -1,9 +1,4 @@
 ﻿using Compression.Algorithms.Huffman;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Compression.Algorithms
 {
@@ -11,5 +6,7 @@ namespace Compression.Algorithms
     {
         CompressedFile Compress(byte[] file);
         byte[] Decompress(CompressedFile compressedFile);
+
+        decimal Percentage { get; }
     }
 }
