@@ -1,6 +1,7 @@
 ﻿using Compression;
 using Compression.Algorithms;
 using Compression.Algorithms.Huffman;
+using Compression.Algorithms.RunLengthEncoding;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -26,13 +27,36 @@ namespace FileSender
         private async void panelFile_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop, false) as string[];
-            var huffman = new HuffmanCoding();
+            ICompressor compressor;
 
+            if (comboBoxAlgorithm.Text.Equals("Huffman"))
+            {
+                compressor = new HuffmanCoding();
+            } else
+            {
+                compressor = new RunLengthEncodingCompressor();
+            }
+            
             var file = File.ReadAllBytes(files.First());
             
+            compressedFile = compressor.Compress(file);
+            compressedFile.OriginalFileName = Path.GetFileName(files.First());
+            
+            FileStream fileStream = new FileStream("arquivo_comprimido.dat", FileMode.Create);
+            Console.WriteLine("Escrevendo arquivo");
+            
+            for (int position = 0; position < compressedFile.Data.Length; position++)
+                fileStream.WriteByte(compressedFile.Data[position]);
+            fileStream.Close();
+
+            var compressionPercentage = (compressedFile.Data.Length * 100) / (decimal) file.Length;
+            labelCompressionPercent.Text = $"{compressionPercentage.ToString("0.00")} %";
+
+            return;
+
             var task = Task.Run(() =>
             {
-                return huffman.Compress(file);
+                return compressor.Compress(file);
             });
 
             await Task.Run(() =>
@@ -45,13 +69,13 @@ namespace FileSender
                 {
                     if (i == 10000)
                     {
-                        labelCompressionPercent.Invoke(d, $"{huffman.Percentage} %");
+                        //labelCompressionPercent.Invoke(d, $"{huffman.Percentage} %");
                     }
 
                     i = (i + 1) % 10001;
                 }
 
-                compressedFile = task.Result;
+                this.compressedFile = task.Result;
             });
 
             //var compressionPercentage = compressedFile.Data.Length / (decimal)file.Length * 100;
@@ -84,6 +108,11 @@ namespace FileSender
         private void WritePercentage(string text)
         {
             labelCompressionPercent.Text = text;
+        }
+
+        private void comboBoxAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }

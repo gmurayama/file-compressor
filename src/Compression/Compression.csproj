@@ -32,6 +32,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,9 +46,14 @@
   <ItemGroup>
     <Compile Include="Algorithms\Huffman\CompressedFile.cs" />
     <Compile Include="Algorithms\Huffman\HuffmanCoding.cs" />
+    <Compile Include="Algorithms\ICompressor.cs" />
+    <Compile Include="Algorithms\RunLengthEncoding\RunLengthEncodingCompressor.cs" />
     <Compile Include="BitArrayExtensions.cs" />
     <Compile Include="DataStructures\MinHeap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
